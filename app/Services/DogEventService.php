@@ -59,7 +59,16 @@ class DogEventService
                     $race_event->save();
                 } else {
                     $editable_race_event = Raceevent::where('id', $item['@attributes']['ID'])->first();
-                    $editable_race_event->delete();
+                    $editable_race_event->id = $item['@attributes']['ID'];
+                    $editable_race_event->eventType = $item['@attributes']['EventType'];
+                    $editable_race_event->eventNumber = $item['@attributes']['EventNumber'];
+                    $editable_race_event->eventTime = $item['@attributes']['EventTime'];
+                    $editable_race_event->finishTime = $item['@attributes']['FinishTime'];
+                    $editable_race_event->eventStatus = $item['@attributes']['EventStatus'];
+                    $editable_race_event->name = $item['@attributes']['Name'];
+                    $editable_race_event->playsPaysOn = $item['@attributes']['PlacePaysOn'];
+                    $editable_race_event->localTime = $local_time;
+                    $editable_race_event->update();
                 }
                 foreach ($item['Entry'] as $entry) {
                     if (isset($entry)) {
@@ -73,7 +82,12 @@ class DogEventService
                             $new_entry->save();
                         } else {
                             $editable_entry = Entry::where('id', $entry['@attributes']['ID'])->first();
-                            $editable_entry->delete();
+                            $editable_entry->id = $entry['@attributes']['ID'];
+                            $editable_entry->draw = $entry['@attributes']['Draw'];
+                            $editable_entry->name = $entry['@attributes']['Name'];
+                            $editable_entry->event_id = $item['@attributes']['ID'];
+                            $editable_entry->event_number = $item['@attributes']['EventNumber'];
+                            $editable_entry->update();
                         }
                     }
                 }
@@ -84,22 +98,23 @@ class DogEventService
                         $new_market->save();
                     } else {
                         $editable_market = Market::where('id', $market['@attributes']['ID'])->first();
-                        $editable_market->delete();
+                        $editable_market->id = $market['@attributes']['ID'];
+                        $editable_market->update();
                     }
-                        foreach ($market['Selection'] as $selection) {
-                            if ($market['@attributes']['ID'] == "Win") {
-                                $entry = Entry::where('event_number', $item['@attributes']['EventNumber'])->where('event_id', $item['@attributes']['ID'])->where('draw', $selection['@attributes']['ID'])->first();
-                                $winandplace = new Winandplace();
-                                $winandplace->win_odd = $selection['@attributes']['Odds'] ?? null;
-                                $winandplace->event_id = $item['@attributes']['ID'];
-                                $winandplace->event_no = $item['@attributes']['EventNumber'];
-                                $winandplace->draw = $selection['@attributes']['ID'];
-                                if ($entry) {
-                                    $winandplace->name = $entry->name;
-                                }
-                                $winandplace->save();
+                    foreach ($market['Selection'] as $selection) {
+                        if ($market['@attributes']['ID'] == "Win") {
+                            $entry = Entry::where('event_number', $item['@attributes']['EventNumber'])->where('event_id', $item['@attributes']['ID'])->where('draw', $selection['@attributes']['ID'])->first();
+                            $winandplace = new Winandplace();
+                            $winandplace->win_odd = $selection['@attributes']['Odds'] ?? null;
+                            $winandplace->event_id = $item['@attributes']['ID'];
+                            $winandplace->event_no = $item['@attributes']['EventNumber'];
+                            $winandplace->draw = $selection['@attributes']['ID'];
+                            if ($entry) {
+                                $winandplace->name = $entry->name;
                             }
-                            if ($market['@attributes']['ID'] == "Place") {
+                            $winandplace->save();
+                        }
+                        if ($market['@attributes']['ID'] == "Place") {
                             $winandplace = Winandplace::where('event_no', $item['@attributes']['EventNumber'])->where('event_id', $item['@attributes']['ID'])->where('draw', $selection['@attributes']['ID'])->first();
                             $entry = Entry::where('event_number', $item['@attributes']['EventNumber'])->where('event_id', $item['@attributes']['ID'])->where('draw', $selection['@attributes']['ID'])->first();
                             $winandplace->place_odd = $selection['@attributes']['Odds'] ?? null;
@@ -111,7 +126,7 @@ class DogEventService
                             }
                             $winandplace->update();
                         }
-                        }
+                    }
 //                    }
 
 //                    }
@@ -131,7 +146,17 @@ class DogEventService
                             }
                         } else {
                             $editable_oddeven = Oddeven::where('event_no', $item['@attributes']['EventNumber'])->where('event_id', $item['@attributes']['ID'])->first();
-                             $editable_oddeven->delete();
+                            foreach ($market['Selection'] as $selection) {
+                                if ($selection['@attributes']['ID'] === "O") {
+                                    $editable_oddeven->o_odd = $selection['@attributes']['Odds'] ?? null;
+                                }
+                                if ($selection['@attributes']['ID'] === "E") {
+                                    $editable_oddeven->e_odd = $selection['@attributes']['Odds'] ?? null;
+                                }
+                                $editable_oddeven->event_id = $item['@attributes']['ID'];
+                                $editable_oddeven->event_no = $item['@attributes']['EventNumber'];
+                                $editable_oddeven->update();
+                            }
 
                         }
                     }
@@ -151,11 +176,19 @@ class DogEventService
                             }
                         } else {
                             $editable_highlow = Highlow::where('event_no', $item['@attributes']['EventNumber'])->where('event_id', $item['@attributes']['ID'])->first();
-                                $editable_highlow->delete();
-
+                            foreach ($market['Selection'] as $selection) {
+                                if ($selection['@attributes']['ID'] === "H") {
+                                    $editable_highlow->h_odd = $selection['@attributes']['Odds'] ?? null;
+                                }
+                                if ($selection['@attributes']['ID'] === "L") {
+                                    $editable_highlow->l_odd = $selection['@attributes']['Odds'] ?? null;
+                                }
+                                $editable_highlow->event_id = $item['@attributes']['ID'];
+                                $editable_highlow->event_no = $item['@attributes']['EventNumber'];
+                                $editable_highlow->update();
+                            }
                         }
                     }
-
                     foreach ($market['Selection'] as $selection) {
                         $new_selection = new Selection();
                         $new_selection->odds = $selection['@attributes']['Odds'] ?? null;
@@ -165,7 +198,6 @@ class DogEventService
                         $new_selection->selection_id = $selection['@attributes']['ID'];
                         $new_selection->save();
                     }
-
                     $forecast_items = $this->split_data($forecast_item);
                     foreach ($forecast_items as $forecast) {
                         if (!Forecast::where('odd', $forecast[1])->where('name', $forecast[0])->first()) {
@@ -177,7 +209,11 @@ class DogEventService
                             $new_forecast->save();
                         } else {
                             $editable_forecast = Forecast::where('odd', $forecast[1])->where('name', $forecast[0])->first();
-                            $editable_forecast->delete();
+                            $editable_forecast->odd = $forecast[1];
+                            $editable_forecast->name = $forecast[0];
+                            $editable_forecast->event_no = $item['@attributes']['EventNumber'];
+                            $editable_forecast->event_id = $item['@attributes']['ID'];
+                            $editable_forecast->update();
                         }
                     }
                     $tricast_items = $this->split_data($tricast_item);
@@ -191,7 +227,11 @@ class DogEventService
                             $new_tricast->save();
                         } else {
                             $editable_tricast = Tricast::where('odd', $tricast[1])->where('name', $tricast[0])->first();
-                            $editable_tricast->delete();
+                            $editable_tricast->odd = $tricast[1];
+                            $editable_tricast->name = $tricast[0];
+                            $editable_tricast->event_no = $item['@attributes']['EventNumber'];
+                            $editable_tricast->event_id = $item['@attributes']['ID'];
+                            $editable_tricast->update();
                         }
                     }
                     $reverseForecast_items = $this->split_data($reverseForecast_item);
@@ -205,7 +245,11 @@ class DogEventService
                             $new_reversed_forecast->save();
                         } else {
                             $editable_reversed_forecast = Reverseforecast::where('odd', $reverseForecast[1])->where('name', $reverseForecast[0])->first();
-                            $editable_reversed_forecast->delete();
+                            $editable_reversed_forecast->odd = $reverseForecast[1];
+                            $editable_reversed_forecast->name = $reverseForecast[0];
+                            $editable_reversed_forecast->event_no = $item['@attributes']['EventNumber'];
+                            $editable_reversed_forecast->event_id = $item['@attributes']['ID'];
+                            $editable_reversed_forecast->update();
                         }
                     }
                     $reverseTricast_items = $this->split_data($reverseTricast_item);
@@ -219,7 +263,11 @@ class DogEventService
                             $new_reversed_tricast->save();
                         } else {
                             $editable_reversed_tricast = Reversetricast::where('odd', $reverseTricast[1])->where('name', $reverseTricast[0])->first();
-                            $editable_reversed_tricast->delete();
+                            $editable_reversed_tricast->odd = $reverseTricast[1];
+                            $editable_reversed_tricast->name = $reverseTricast[0];
+                            $editable_reversed_tricast->event_no = $item['@attributes']['EventNumber'];
+                            $editable_reversed_tricast->event_id = $item['@attributes']['ID'];
+                            $editable_reversed_tricast->update();
                         }
                     }
                     $swinger_items = $this->split_data($swinger_item);
@@ -233,7 +281,11 @@ class DogEventService
                             $new_swinger->save();
                         } else {
                             $editable_swinger = Swinger::where('odd', $swinger[1])->where('name', $swinger[0])->first();
-                            $editable_swinger->delete();
+                            $editable_swinger->odd = $swinger[1];
+                            $editable_swinger->name = $swinger[0];
+                            $editable_swinger->event_no = $item['@attributes']['EventNumber'];
+                            $editable_swinger->event_id = $item['@attributes']['ID'];
+                            $editable_swinger->update();
                         }
                     }
                 }

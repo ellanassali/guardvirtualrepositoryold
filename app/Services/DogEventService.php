@@ -8,6 +8,8 @@ use App\Models\Highlow;
 use App\Models\Market;
 use App\Models\Oddeven;
 use App\Models\Raceevent;
+use App\Models\Raceresult;
+use App\Models\Racewinresults;
 use App\Models\Reverseforecast;
 use App\Models\Reversetricast;
 use App\Models\Selection;
@@ -19,6 +21,10 @@ use Illuminate\Support\Facades\Http;
 
 class DogEventService
 {
+    public function getEvents()
+    {
+
+    }
     public function store()
     {
         $dogEvents = Http::get('http://vseintegration.kironinteractive.com:8013/VseGameServer/DataService/UpcomingEvents?type=PreRecDogs');
@@ -289,9 +295,67 @@ class DogEventService
                         }
                     }
                 }
+                $event_id = $item['@attributes']['ID'];
+                $results_data = Http::get('http://vseintegration.kironinteractive.com:8013/VseGameServer/DataService/result/'.$event_id.'');
+                $xml = simplexml_load_string($dogEvents->body());
+                $local_time = json_decode(json_encode($xml), true)['@attributes']['LocalTime'];
+                $json = json_encode($xml->children());
+
+
+                foreach (json_decode($json, true) as $items) {
+                    foreach ($items as $item) {
+                        foreach ($item['Entry'] as $result) {
+                            $race_result = new Raceresult();
+                            $race_result->event_id = $item['@attributes']['ID'];
+                            $race_result->event_no = $item['@attributes']['EventNumber'];
+                            $race_result->event_time = $item['@attributes']['EventTime'];
+                            $race_result->event_type = $item['@attributes']['EventType'];
+                            $race_result->event_finishTime = $item['@attributes']['FinishTime'];
+                            $race_result->playsPaysOn = $item['@attributes']['PlacePaysOn'];
+                            $race_result->entry_id = $result['@attributes']['ID'];
+                            $race_result->entry_name = $item['@attributes']['Name'];
+                            if ($item['@attributes']['PlacePaysOn'] === "2") {
+                                if (isset($result['@attributes']["Finish"]) && $result['@attributes']["Finish"] === "2") {
+                                    $race_result->place_position = "1";
+                                }
+                            } else {
+                                    $race_result->place_position = "0";
+                            }
+                            $race_result->finish_position = $item['@attributes']['ID'];
+                            $race_result->place_position = $item['@attributes']['ID'];
+                            $race_result->save();
+
+                            foreach ($item['Market'] as $market) {
+                                if($market['@attributes']['ID'] === "Win") {
+                                    $win_result = new Racewinresults();
+                                    if (isset($market['@attributes']['WinningSelectionIDs']) && $market['@attributes']['WinningSelectionIDs'] === "2") {
+                                        $win_result->win_status = 1;
+                                    } else {
+                                        $win_result->win_status = 0;
+                                    }
+                                    $win_result->event_id = $item['@attributes']['ID'];
+                                    $win_result->event_no = $item['@attributes']['EventNumber'];
+                                    $win_result->event_time = $item['@attributes']['EventTime'];
+                                    $win_result->event_type = $item['@attributes']['EventType'];
+                                    $win_result->event_finishTime = $item['@attributes']['FinishTime'];
+                                    foreach ($market["Selection"] as $selection) {
+                                        $win_result->selection_id = $selection['@attributes']['ID'] ?? null;
+                                        $win_result->odd = $selection['@attributes']['Odds'];
+                                    }
+                                    $win_result->entry_id = $result['@attributes']['ID'] ?? null;
+                                    $win_result->entry_name = $result['@attributes']['Name'] ?? null;
+                                    $win_result->save();
+                                }
+                            }
+
+                        }
+
+                    }
+                }
             }
         }
     }
+
     public function split_data($string) {
         $forecast_items = [];
         $new_item = [];

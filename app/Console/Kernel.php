@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('monitoring:dog-events')->everyTwoHours();
+        $schedule->command('monitoring:motor-events')->everyMinute();
+         $schedule->command('monitoring:dog-events')->everyMinute();
          $schedule->command('monitoring:status-change')->everyFiveMinutes();
     }
 

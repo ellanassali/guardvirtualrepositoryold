@@ -12,7 +12,7 @@ class MotorraceEventController extends Controller
         $this->motorraceEventService = $motorraceEventService;
     }
     /**
-     * Display a listing of the resource.
+     * Display jj  nnnnna listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */

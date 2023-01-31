@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('forecastresults', function (Blueprint $table) {
+        Schema::create('reversetricasttresults', function (Blueprint $table) {
             $table->id();
             $table->integer('event_id');
             $table->integer('event_no');
@@ -21,9 +21,10 @@ return new class extends Migration
             $table->dateTime('event_finishTime');
             $table->string('event_type');
             $table->string('selection_id');
+            $table->decimal('odd');
             $table->string('position_one');
             $table->string('position_two');
-            $table->decimal('odd');
+            $table->string('position_three');
             $table->timestamps();
         });
     }
@@ -35,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('forecastresults');
+        Schema::dropIfExists('reversetricasttresults');
     }
 };

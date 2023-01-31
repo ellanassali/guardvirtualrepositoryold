@@ -13,17 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('forecastresults', function (Blueprint $table) {
+        Schema::create('highlowresults', function (Blueprint $table) {
             $table->id();
             $table->integer('event_id');
             $table->integer('event_no');
             $table->dateTime('event_time');
             $table->dateTime('event_finishTime');
             $table->string('event_type');
+            $table->string('entry_id')->nullable();
             $table->string('selection_id');
-            $table->string('position_one');
-            $table->string('position_two');
+            $table->string('entry_name')->nullable();
             $table->decimal('odd');
+            $table->integer('win_status');
             $table->timestamps();
         });
     }
@@ -35,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('forecastresults');
+        Schema::dropIfExists('highlowresults');
     }
 };

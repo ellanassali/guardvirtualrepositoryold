@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('playsPaysOn');
             $table->integer('entry_id');
             $table->string('entry_name');
-            $table->integer('finish_position');
+            $table->integer('finish_position')->nullable();
             $table->integer('place_position');
             $table->timestamps();
         });

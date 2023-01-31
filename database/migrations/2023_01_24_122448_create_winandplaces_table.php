@@ -20,6 +20,9 @@ return new class extends Migration
             $table->integer('event_id');
             $table->integer('event_no');
             $table->string('draw');
+            $table->dateTime('event_time');
+            $table->dateTime('finish_time');
+            $table->string('event_type');
             $table->string('name')->nullable();
             $table->timestamps();
         });

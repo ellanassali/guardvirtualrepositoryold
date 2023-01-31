@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DogEventController;
+use App\Http\Controllers\HorseEventController;
 use App\Http\Controllers\MotorraceEventController;
 use App\Http\Controllers\MarketController;
 use Illuminate\Http\Request;
@@ -22,4 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::resource('motorrace',MotorraceEventController::class);
 Route::resource('dog',DogEventController::class);
+Route::resource('horse',HorseEventController::class);
 Route::resource('market',MarketController::class);

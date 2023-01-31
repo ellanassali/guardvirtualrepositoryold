@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('monitoring:motor-events')->everyMinute();
          $schedule->command('monitoring:dog-events')->everyMinute();
+         $schedule->command('monitoring:horse-events')->everyMinute();
          $schedule->command('monitoring:status-change')->everyFiveMinutes();
     }
 

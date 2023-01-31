@@ -4,18 +4,27 @@ namespace App\Services;
 
 use App\Models\Entry;
 use App\Models\Forecast;
+use App\Models\Forecastresults;
 use App\Models\Highlow;
+use App\Models\Highlowresults;
 use App\Models\Market;
 use App\Models\Oddeven;
+use App\Models\Oddevenresults;
+use App\Models\Placeresults;
 use App\Models\Raceevent;
 use App\Models\Raceresult;
 use App\Models\Racewinresults;
 use App\Models\Reverseforecast;
+use App\Models\Reverseforecastresults;
 use App\Models\Reversetricast;
+use App\Models\Reversetricasttresults;
 use App\Models\Selection;
 use App\Models\Swinger;
+use App\Models\Swingerresults;
 use App\Models\Tricast;
+use App\Models\Tricastresults;
 use App\Models\Winandplace;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 
@@ -85,6 +94,9 @@ class MotorraceEventService
                             $new_entry->name = $entry['@attributes']['Name'] ?? null;
                             $new_entry->event_id = $item['@attributes']['ID'];
                             $new_entry->event_number = $item['@attributes']['EventNumber'];
+                            $new_entry->event_type = $item['@attributes']['EventType'];
+                            $new_entry->event_time = $item['@attributes']['EventTime'];
+                            $new_entry->finish_time = $item['@attributes']['FinishTime'];
                             $new_entry->save();
                         } else {
                             $editable_entry = Entry::where('id', $entry['@attributes']['ID'])->first();
@@ -93,6 +105,9 @@ class MotorraceEventService
                             $editable_entry->name = $entry['@attributes']['Name'];
                             $editable_entry->event_id = $item['@attributes']['ID'];
                             $editable_entry->event_number = $item['@attributes']['EventNumber'];
+                            $editable_entry->event_type = $item['@attributes']['EventType'];
+                            $editable_entry->event_time = $item['@attributes']['EventTime'];
+                            $editable_entry->finish_time = $item['@attributes']['FinishTime'];
                             $editable_entry->update();
                         }
                     }
@@ -101,10 +116,19 @@ class MotorraceEventService
                     if (!Market::where('id', $market['@attributes']['ID'])->first()) {
                         $new_market = new Market();
                         $new_market->id = $market['@attributes']['ID'];
+                        $new_market->event_number = $item['@attributes']['EventNumber'];
+                        $new_market->event_type = $item['@attributes']['EventType'];
+                        $new_market->event_time = $item['@attributes']['EventTime'];
+                        $new_market->finish_time = $item['@attributes']['FinishTime'];
+
                         $new_market->save();
                     } else {
                         $editable_market = Market::where('id', $market['@attributes']['ID'])->first();
                         $editable_market->id = $market['@attributes']['ID'];
+                        $editable_market->event_number = $item['@attributes']['EventNumber'];
+                        $editable_market->event_type = $item['@attributes']['EventType'];
+                        $editable_market->event_time = $item['@attributes']['EventTime'];
+                        $editable_market->finish_time = $item['@attributes']['FinishTime'];
                         $editable_market->update();
                     }
                     foreach ($market['Selection'] as $selection) {
@@ -114,6 +138,9 @@ class MotorraceEventService
                             $winandplace->win_odd = $selection['@attributes']['Odds'] ?? null;
                             $winandplace->event_id = $item['@attributes']['ID'];
                             $winandplace->event_no = $item['@attributes']['EventNumber'];
+                            $winandplace->event_type = $item['@attributes']['EventType'];
+                            $winandplace->event_time = $item['@attributes']['EventTime'];
+                            $winandplace->finish_time = $item['@attributes']['FinishTime'];
                             $winandplace->draw = $selection['@attributes']['ID'];
                             if ($entry) {
                                 $winandplace->name = $entry->name;
@@ -126,6 +153,9 @@ class MotorraceEventService
                             $winandplace->place_odd = $selection['@attributes']['Odds'] ?? null;
                             $winandplace->event_id = $item['@attributes']['ID'];
                             $winandplace->event_no = $item['@attributes']['EventNumber'];
+                            $winandplace->event_type = $item['@attributes']['EventType'];
+                            $winandplace->event_time = $item['@attributes']['EventTime'];
+                            $winandplace->finish_time = $item['@attributes']['FinishTime'];
                             $winandplace->draw = $selection['@attributes']['ID'];
                             if ($entry) {
                                 $winandplace->name = $entry->name;
@@ -133,9 +163,6 @@ class MotorraceEventService
                             $winandplace->update();
                         }
                     }
-//                    }
-
-//                    }
                     if ($market['@attributes']['ID'] == "OE") {
                         if (!Oddeven::where('event_no', $item['@attributes']['EventNumber'])->where('event_id', $item['@attributes']['ID'])->first()) {
                             $new_oddeven = new Oddeven();
@@ -148,6 +175,9 @@ class MotorraceEventService
                                 }
                                 $new_oddeven->event_id = $item['@attributes']['ID'];
                                 $new_oddeven->event_no = $item['@attributes']['EventNumber'];
+                                $new_oddeven->event_type = $item['@attributes']['EventType'];
+                                $new_oddeven->event_time = $item['@attributes']['EventTime'];
+                                $new_oddeven->finish_time = $item['@attributes']['FinishTime'];
                                 $new_oddeven->save();
                             }
                         } else {
@@ -161,6 +191,9 @@ class MotorraceEventService
                                 }
                                 $editable_oddeven->event_id = $item['@attributes']['ID'];
                                 $editable_oddeven->event_no = $item['@attributes']['EventNumber'];
+                                $editable_oddeven->event_type = $item['@attributes']['EventType'];
+                                $editable_oddeven->event_time = $item['@attributes']['EventTime'];
+                                $editable_oddeven->finish_time = $item['@attributes']['FinishTime'];
                                 $editable_oddeven->update();
                             }
 
@@ -178,6 +211,10 @@ class MotorraceEventService
                                 }
                                 $new_highlow->event_id = $item['@attributes']['ID'];
                                 $new_highlow->event_no = $item['@attributes']['EventNumber'];
+                                $new_highlow->event_type = $item['@attributes']['EventType'];
+                                $new_highlow->event_time = $item['@attributes']['EventTime'];
+                                $new_highlow->finish_time = $item['@attributes']['FinishTime'];
+
                                 $new_highlow->save();
                             }
                         } else {
@@ -191,6 +228,9 @@ class MotorraceEventService
                                 }
                                 $editable_highlow->event_id = $item['@attributes']['ID'];
                                 $editable_highlow->event_no = $item['@attributes']['EventNumber'];
+                                $editable_highlow->event_type = $item['@attributes']['EventType'];
+                                $editable_highlow->event_time = $item['@attributes']['EventTime'];
+                                $editable_highlow->finish_time = $item['@attributes']['FinishTime'];
                                 $editable_highlow->update();
                             }
                         }
@@ -200,6 +240,9 @@ class MotorraceEventService
                         $new_selection->odds = $selection['@attributes']['Odds'] ?? null;
                         $new_selection->event_id = $item['@attributes']['ID'];
                         $new_selection->event_number = $item['@attributes']['EventNumber'];
+                        $new_selection->event_type = $item['@attributes']['EventType'];
+                        $new_selection->event_time = $item['@attributes']['EventTime'];
+                        $new_selection->finish_time = $item['@attributes']['FinishTime'];
                         $new_selection->market = $market['@attributes']['ID'];
                         $new_selection->selection_id = $selection['@attributes']['ID'];
                         $new_selection->save();
@@ -211,6 +254,9 @@ class MotorraceEventService
                             $new_forecast->odd = $forecast[1];
                             $new_forecast->name = $forecast[0];
                             $new_forecast->event_no = $item['@attributes']['EventNumber'];
+                            $new_forecast->event_type = $item['@attributes']['EventType'];
+                            $new_forecast->event_time = $item['@attributes']['EventTime'];
+                            $new_forecast->finish_time = $item['@attributes']['FinishTime'];
                             $new_forecast->event_id = $item['@attributes']['ID'];
                             $new_forecast->save();
                         } else {
@@ -218,7 +264,11 @@ class MotorraceEventService
                             $editable_forecast->odd = $forecast[1];
                             $editable_forecast->name = $forecast[0];
                             $editable_forecast->event_no = $item['@attributes']['EventNumber'];
+                            $editable_forecast->event_type = $item['@attributes']['EventType'];
+                            $editable_forecast->event_time = $item['@attributes']['EventTime'];
+                            $editable_forecast->finish_time = $item['@attributes']['FinishTime'];
                             $editable_forecast->event_id = $item['@attributes']['ID'];
+
                             $editable_forecast->update();
                         }
                     }
@@ -229,6 +279,9 @@ class MotorraceEventService
                             $new_tricast->odd = $tricast[1];
                             $new_tricast->name = $tricast[0];
                             $new_tricast->event_no = $item['@attributes']['EventNumber'];
+                            $new_tricast->event_type = $item['@attributes']['EventType'];
+                            $new_tricast->event_time = $item['@attributes']['EventTime'];
+                            $new_tricast->finish_time = $item['@attributes']['FinishTime'];
                             $new_tricast->event_id = $item['@attributes']['ID'];
                             $new_tricast->save();
                         } else {
@@ -236,6 +289,9 @@ class MotorraceEventService
                             $editable_tricast->odd = $tricast[1];
                             $editable_tricast->name = $tricast[0];
                             $editable_tricast->event_no = $item['@attributes']['EventNumber'];
+                            $editable_tricast->event_type = $item['@attributes']['EventType'];
+                            $editable_tricast->event_time = $item['@attributes']['EventTime'];
+                            $editable_tricast->finish_time = $item['@attributes']['FinishTime'];
                             $editable_tricast->event_id = $item['@attributes']['ID'];
                             $editable_tricast->update();
                         }
@@ -247,6 +303,9 @@ class MotorraceEventService
                             $new_reversed_forecast->odd = $reverseForecast[1];
                             $new_reversed_forecast->name = $reverseForecast[0];
                             $new_reversed_forecast->event_no = $item['@attributes']['EventNumber'];
+                            $new_reversed_forecast->event_type = $item['@attributes']['EventType'];
+                            $new_reversed_forecast->event_time = $item['@attributes']['EventTime'];
+                            $new_reversed_forecast->finish_time = $item['@attributes']['FinishTime'];
                             $new_reversed_forecast->event_id = $item['@attributes']['ID'];
                             $new_reversed_forecast->save();
                         } else {
@@ -254,6 +313,9 @@ class MotorraceEventService
                             $editable_reversed_forecast->odd = $reverseForecast[1];
                             $editable_reversed_forecast->name = $reverseForecast[0];
                             $editable_reversed_forecast->event_no = $item['@attributes']['EventNumber'];
+                            $editable_reversed_forecast->event_type = $item['@attributes']['EventType'];
+                            $editable_reversed_forecast->event_time = $item['@attributes']['EventTime'];
+                            $editable_reversed_forecast->finish_time = $item['@attributes']['FinishTime'];
                             $editable_reversed_forecast->event_id = $item['@attributes']['ID'];
                             $editable_reversed_forecast->update();
                         }
@@ -265,6 +327,9 @@ class MotorraceEventService
                             $new_reversed_tricast->odd = $reverseTricast[1];
                             $new_reversed_tricast->name = $reverseTricast[0];
                             $new_reversed_tricast->event_no = $item['@attributes']['EventNumber'];
+                            $new_reversed_tricast->event_type = $item['@attributes']['EventType'];
+                            $new_reversed_tricast->event_time = $item['@attributes']['EventTime'];
+                            $new_reversed_tricast->finish_time = $item['@attributes']['FinishTime'];
                             $new_reversed_tricast->event_id = $item['@attributes']['ID'];
                             $new_reversed_tricast->save();
                         } else {
@@ -272,6 +337,9 @@ class MotorraceEventService
                             $editable_reversed_tricast->odd = $reverseTricast[1];
                             $editable_reversed_tricast->name = $reverseTricast[0];
                             $editable_reversed_tricast->event_no = $item['@attributes']['EventNumber'];
+                            $editable_reversed_tricast->event_type = $item['@attributes']['EventType'];
+                            $editable_reversed_tricast->event_time = $item['@attributes']['EventTime'];
+                            $editable_reversed_tricast->finish_time = $item['@attributes']['FinishTime'];
                             $editable_reversed_tricast->event_id = $item['@attributes']['ID'];
                             $editable_reversed_tricast->update();
                         }
@@ -283,6 +351,9 @@ class MotorraceEventService
                             $new_swinger->odd = $swinger[1];
                             $new_swinger->name = $swinger[0];
                             $new_swinger->event_no = $item['@attributes']['EventNumber'];
+                            $new_swinger->event_type = $item['@attributes']['EventType'];
+                            $new_swinger->event_time = $item['@attributes']['EventTime'];
+                            $new_swinger->finish_time = $item['@attributes']['FinishTime'];
                             $new_swinger->event_id = $item['@attributes']['ID'];
                             $new_swinger->save();
                         } else {
@@ -290,66 +361,206 @@ class MotorraceEventService
                             $editable_swinger->odd = $swinger[1];
                             $editable_swinger->name = $swinger[0];
                             $editable_swinger->event_no = $item['@attributes']['EventNumber'];
+                            $editable_swinger->event_type = $item['@attributes']['EventType'];
+                            $editable_swinger->event_time = $item['@attributes']['EventTime'];
+                            $editable_swinger->finish_time = $item['@attributes']['FinishTime'];
                             $editable_swinger->event_id = $item['@attributes']['ID'];
                             $editable_swinger->update();
                         }
                     }
                 }
-                $event_id = $item['@attributes']['ID'];
-                $results_data = Http::get('http://vseintegration.kironinteractive.com:8013/VseGameServer/DataService/result/'.$event_id.'');
-                $xml = simplexml_load_string($dogEvents->body());
-                $local_time = json_decode(json_encode($xml), true)['@attributes']['LocalTime'];
-                $json = json_encode($xml->children());
 
+                if($item['@attributes']['FinishTime'] < Carbon::now()) {
+                    $event_id = $item['@attributes']['ID'];
+                    $results_data = Http::get('http://vseintegration.kironinteractive.com:8013/VseGameServer/DataService/result/'.$event_id.'');
+                    $xml = simplexml_load_string($results_data->body());
+                    $json = json_encode($xml->children());
 
-                foreach (json_decode($json, true) as $items) {
-                    foreach ($items as $item) {
-                        foreach ($item['Entry'] as $result) {
-                            $race_result = new Raceresult();
-                            $race_result->event_id = $item['@attributes']['ID'];
-                            $race_result->event_no = $item['@attributes']['EventNumber'];
-                            $race_result->event_time = $item['@attributes']['EventTime'];
-                            $race_result->event_type = $item['@attributes']['EventType'];
-                            $race_result->event_finishTime = $item['@attributes']['FinishTime'];
-                            $race_result->playsPaysOn = $item['@attributes']['PlacePaysOn'];
-                            $race_result->entry_id = $result['@attributes']['ID'];
-                            $race_result->entry_name = $item['@attributes']['Name'];
-                            if ($item['@attributes']['PlacePaysOn'] === "2") {
-                                if (isset($result['@attributes']["Finish"]) && $result['@attributes']["Finish"] === "2") {
-                                    $race_result->place_position = "1";
-                                }
-                            } else {
-                                    $race_result->place_position = "0";
+                    foreach (json_decode($json, true) as $items) {
+                        foreach ($items['Market'] as $market) {
+                            if ($market['@attributes']['ID'] === "Forecast") {
+                                $results = explode(',', $items['@attributes']['Result']);
+                                $forecast_result = new Forecastresults();
+                                $forecast_result->event_id = $items['@attributes']['ID'];
+                                $forecast_result->event_no = $items['@attributes']['EventNumber'];
+                                $forecast_result->event_time = $items['@attributes']['EventTime'];
+                                $forecast_result->event_type = $items['@attributes']['EventType'];
+                                $forecast_result->event_finishTime = $items['@attributes']['FinishTime'];
+                                $forecast_result->position_one = $results[0];
+                                $forecast_result->position_two = $results[1];
+                                $forecast_result->selection_id = $market["Selection"]['@attributes']['ID'] ?? null;
+                                $forecast_result->odd = $market["Selection"]['@attributes']['Odds'];
+                                $forecast_result->save();
                             }
-                            $race_result->finish_position = $item['@attributes']['ID'];
-                            $race_result->place_position = $item['@attributes']['ID'];
-                            $race_result->save();
-
-                            foreach ($item['Market'] as $market) {
-                                if($market['@attributes']['ID'] === "Win") {
-                                    $win_result = new Racewinresults();
-                                    if (isset($market['@attributes']['WinningSelectionIDs']) && $market['@attributes']['WinningSelectionIDs'] === "2") {
-                                        $win_result->win_status = 1;
-                                    } else {
-                                        $win_result->win_status = 0;
+                            if ($market['@attributes']['ID'] === "ReverseForecast") {
+                                $results = explode(',', $items['@attributes']['Result']);
+                                $reversed_forecast_result = new Reverseforecastresults();
+                                $reversed_forecast_result->event_id = $items['@attributes']['ID'];
+                                $reversed_forecast_result->event_no = $items['@attributes']['EventNumber'];
+                                $reversed_forecast_result->event_time = $items['@attributes']['EventTime'];
+                                $reversed_forecast_result->event_type = $items['@attributes']['EventType'];
+                                $reversed_forecast_result->event_finishTime = $items['@attributes']['FinishTime'];
+                                $reversed_forecast_result->position_one = $results[0];
+                                $reversed_forecast_result->position_two = $results[1];
+                                $reversed_forecast_result->selection_id = $market["Selection"]['@attributes']['ID'] ?? null;
+                                $reversed_forecast_result->odd = $market["Selection"]['@attributes']['Odds'];
+                                $reversed_forecast_result->save();
+                            }
+                            if ($market['@attributes']['ID'] === "Tricast") {
+                                $results = explode(',', $items['@attributes']['Result']);
+                                $tricast_result = new Tricastresults();
+                                $tricast_result->event_id = $items['@attributes']['ID'];
+                                $tricast_result->event_no = $items['@attributes']['EventNumber'];
+                                $tricast_result->event_time = $items['@attributes']['EventTime'];
+                                $tricast_result->event_type = $items['@attributes']['EventType'];
+                                $tricast_result->event_finishTime = $items['@attributes']['FinishTime'];
+                                $tricast_result->position_one = $results[0];
+                                $tricast_result->position_two = $results[1];
+                                $tricast_result->position_three = $results[2];
+                                $tricast_result->selection_id = $market["Selection"]['@attributes']['ID'] ?? null;
+                                $tricast_result->odd = $market["Selection"]['@attributes']['Odds'];
+                                $tricast_result->save();
+                            }
+                            if ($market['@attributes']['ID'] === "ReverseTricast") {
+                                $results = explode(',', $items['@attributes']['Result']);
+                                $reversed_tricast_result = new Reversetricasttresults();
+                                $reversed_tricast_result->event_id = $items['@attributes']['ID'];
+                                $reversed_tricast_result->event_no = $items['@attributes']['EventNumber'];
+                                $reversed_tricast_result->event_time = $items['@attributes']['EventTime'];
+                                $reversed_tricast_result->event_type = $items['@attributes']['EventType'];
+                                $reversed_tricast_result->event_finishTime = $items['@attributes']['FinishTime'];
+                                $reversed_tricast_result->position_one = $results[0];
+                                $reversed_tricast_result->position_two = $results[1];
+                                $reversed_tricast_result->position_three = $results[2];
+                                $reversed_tricast_result->selection_id = $market["Selection"]['@attributes']['ID'] ?? null;
+                                $reversed_tricast_result->odd = $market["Selection"]['@attributes']['Odds'];
+                                $reversed_tricast_result->save();
+                            }
+                            if ($market['@attributes']['ID'] === "Swinger") {
+                                foreach ($market["Selection"] as $selection) {
+                                    $swinger_result_result = new Swingerresults();
+                                    $swinger_result_result->event_id = $items['@attributes']['ID'];
+                                    $swinger_result_result->event_no = $items['@attributes']['EventNumber'];
+                                    $swinger_result_result->event_time = $items['@attributes']['EventTime'];
+                                    $swinger_result_result->event_type = $items['@attributes']['EventType'];
+                                    $swinger_result_result->event_finishTime = $items['@attributes']['FinishTime'];
+                                    $swinger_result_result->entry_id = $selection['@attributes']['ID'];
+                                    $swinger_result_result->entry_name = $selection['@attributes']['ID'];
+                                    $swinger_result_result->win_status = 1;
+                                    $swinger_result_result->odd = $selection['@attributes']['Odds'];
+                                    $swinger_result_result->selection_id = $selection['@attributes']['ID'] ?? null;
+                                    $swinger_result_result->save();
+                                }
+                            }
+                            if ($market['@attributes']['ID'] === "OE") {
+                                foreach ($market["Selection"] as $selection) {
+                                    if ($market['@attributes']['WinningSelectionIDs'] === $selection['@attributes']['ID']) {
+                                        $oddeven_result = new Oddevenresults();
+                                        $oddeven_result->event_id = $items['@attributes']['ID'];
+                                        $oddeven_result->event_no = $items['@attributes']['EventNumber'];
+                                        $oddeven_result->event_time = $items['@attributes']['EventTime'];
+                                        $oddeven_result->event_type = $items['@attributes']['EventType'];
+                                        $oddeven_result->event_finishTime = $items['@attributes']['FinishTime'];
+                                        $oddeven_result->selection_id = $selection['@attributes']['ID'] ?? null;
+                                        $oddeven_result->odd = $selection['@attributes']['Odds'];
+                                        $oddeven_result->entry_id = $selection['@attributes']['ID'];
+                                        $oddeven_result->win_status = 1;
+                                        $oddeven_result->entry_name = $selection['@attributes']['ID'];
+                                        $oddeven_result->save();
                                     }
-                                    $win_result->event_id = $item['@attributes']['ID'];
-                                    $win_result->event_no = $item['@attributes']['EventNumber'];
-                                    $win_result->event_time = $item['@attributes']['EventTime'];
-                                    $win_result->event_type = $item['@attributes']['EventType'];
-                                    $win_result->event_finishTime = $item['@attributes']['FinishTime'];
-                                    foreach ($market["Selection"] as $selection) {
-                                        $win_result->selection_id = $selection['@attributes']['ID'] ?? null;
-                                        $win_result->odd = $selection['@attributes']['Odds'];
+                                }
+                            }
+                            if ($market['@attributes']['ID'] === "HL") {
+                                foreach ($market["Selection"] as $selection) {
+                                    if ($market['@attributes']['WinningSelectionIDs'] === $selection['@attributes']['ID']) {
+                                        $high_low_results = new Highlowresults();
+                                        $high_low_results->event_id = $items['@attributes']['ID'];
+                                        $high_low_results->event_no = $items['@attributes']['EventNumber'];
+                                        $high_low_results->event_time = $items['@attributes']['EventTime'];
+                                        $high_low_results->event_type = $items['@attributes']['EventType'];
+                                        $high_low_results->event_finishTime = $items['@attributes']['FinishTime'];
+                                        $high_low_results->selection_id = $selection['@attributes']['ID'] ?? null;
+                                        $high_low_results->odd = $selection['@attributes']['Odds'];
+                                        $high_low_results->entry_id = $selection['@attributes']['ID'];
+                                        $high_low_results->win_status = 1;
+                                        $high_low_results->entry_name = $selection['@attributes']['ID'];
+                                        $high_low_results->save();
                                     }
-                                    $win_result->entry_id = $result['@attributes']['ID'] ?? null;
-                                    $win_result->entry_name = $result['@attributes']['Name'] ?? null;
-                                    $win_result->save();
                                 }
                             }
 
                         }
+                        foreach ($items['Entry'] as $result) {
+                            $race_result = new Raceresult();
+                            $race_result->event_id = $items['@attributes']['ID'];
+                            $race_result->event_no = $items['@attributes']['EventNumber'];
+                            $race_result->event_time = $items['@attributes']['EventTime'];
+                            $race_result->event_type = $items['@attributes']['EventType'];
+                            $race_result->event_finishTime = $items['@attributes']['FinishTime'];
+                            $race_result->playsPaysOn = $items['@attributes']['PlacePaysOn'];
+                            $race_result->entry_id = $result['@attributes']['ID'];
+                            $race_result->entry_name = $items['@attributes']['Name'];
+                            if ($item['@attributes']['PlacePaysOn'] === "2" || $items['@attributes']['PlacePaysOn'] === "3") {
+                                if (isset($result['@attributes']["Finish"])) {
+                                    $race_result->place_position = "1";
+                                } else {
+                                    $race_result->place_position = "0";
+                                }
+                            } else {
+                                $race_result->place_position = "0";
+                            }
+                            $race_result->finish_position = $result['@attributes']['Finish'] ?? null;
+                            $race_result->save();
 
+                            foreach ($items['Market'] as $market) {
+                                if ($market['@attributes']['ID'] === "Win") {
+                                    if (isset($result['@attributes']["Finish"]) && $result['@attributes']["Finish"] === "1") {
+                                        foreach ($market["Selection"] as $selection) {
+                                            if ($selection['@attributes']['ID'] === $result['@attributes']['Draw']) {
+                                                $win_result = new Racewinresults();
+                                                if ($market['@attributes']['WinningSelectionIDs'] === "2" && $result['@attributes']["Finish"] === "1") {
+                                                    $win_result->win_status = 1;
+                                                } else {
+                                                    $win_result->win_status = 0;
+                                                }
+                                                $win_result->event_id = $items['@attributes']['ID'];
+                                                $win_result->event_no = $items['@attributes']['EventNumber'];
+                                                $win_result->event_time = $items['@attributes']['EventTime'];
+                                                $win_result->event_type = $items['@attributes']['EventType'];
+                                                $win_result->event_finishTime = $items['@attributes']['FinishTime'];
+                                                $win_result->selection_id = $selection['@attributes']['ID'] ?? null;
+                                                $win_result->odd = $selection['@attributes']['Odds'];
+                                                $win_result->entry_id = $result['@attributes']['ID'] ?? null;
+                                                $win_result->entry_name = $result['@attributes']['Name'] ?? null;
+                                                $win_result->save();
+                                            }
+                                        }
+                                    }
+
+                                }
+                                if ($market['@attributes']['ID'] === "Place") {
+                                    foreach (explode(',', $items['@attributes']['Result']) as $result_number) {
+                                        foreach ($market["Selection"] as $selection) {
+                                            if ($selection['@attributes']['ID'] === $result_number && $result['@attributes']['Draw'] === $result_number) {
+                                                $place_result = new Placeresults();
+                                                $place_result->place_status = 1;
+                                                $place_result->event_id = $items['@attributes']['ID'];
+                                                $place_result->event_no = $items['@attributes']['EventNumber'];
+                                                $place_result->event_time = $items['@attributes']['EventTime'];
+                                                $place_result->event_type = $items['@attributes']['EventType'];
+                                                $place_result->event_finishTime = $items['@attributes']['FinishTime'];
+                                                $place_result->selection_id = $selection['@attributes']['ID'] ?? null;
+                                                $place_result->odd = $selection['@attributes']['Odds'];
+                                                $place_result->entry_id = $result['@attributes']['ID'] ?? null;
+                                                $place_result->entry_name = $result['@attributes']['Name'] ?? null;
+                                                $place_result->save();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
                     }
                 }
             }

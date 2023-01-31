@@ -19,6 +19,9 @@ return new class extends Migration
             $table->decimal('odds')->nullable();
             $table->integer('event_id');
             $table->integer('event_number');
+            $table->dateTime('event_time');
+            $table->dateTime('finish_time');
+            $table->string('event_type');
             $table->string('market');
             $table->timestamps();
         });

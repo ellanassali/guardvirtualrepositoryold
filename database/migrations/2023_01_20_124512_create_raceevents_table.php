@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('eventType');
             $table->integer('eventNumber');
-            $table->dateTime('eventTime');
+            $table->date('event_date');
+            $table->time('event_time');
             $table->dateTime('finishTime');
             $table->string('eventStatus');
             $table->integer('distance');

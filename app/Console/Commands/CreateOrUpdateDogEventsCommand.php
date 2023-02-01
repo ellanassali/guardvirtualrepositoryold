@@ -35,5 +35,8 @@ class CreateOrUpdateDogEventsCommand extends Command
     public function handle()
     {
        $this->dogEventService->store();
+       $this->horseEventService->store();
+       $this->motorraceEventService->store();
+       $this->dogEventService->store();
     }
 }

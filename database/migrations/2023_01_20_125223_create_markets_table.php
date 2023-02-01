@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('markets', function (Blueprint $table) {
             $table->string('id');
             $table->integer('event_number');
-            $table->dateTime('event_time');
+            $table->date('event_date');
+            $table->time('event_time');
             $table->dateTime('finish_time');
             $table->string('event_type');
             $table->timestamps();

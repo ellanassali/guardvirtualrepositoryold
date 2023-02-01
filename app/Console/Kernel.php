@@ -15,10 +15,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('monitoring:motor-events')->everyMinute();
-         $schedule->command('monitoring:dog-events')->everyMinute();
-         $schedule->command('monitoring:horse-events')->everyMinute();
-         $schedule->command('monitoring:status-change')->everyFiveMinutes();
+        $schedule->command('monitoring:motor-events')->dailyAt('10:45');;
+        $schedule->command('monitoring:dog-events')->dailyAt('10:45');;
+        $schedule->command('monitoring:horse-events')->dailyAt('10:45');;
+        $schedule->command('monitoring:status-change')->dailyAt('10:45');
     }
 
     /**

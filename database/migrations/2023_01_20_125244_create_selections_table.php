@@ -18,8 +18,10 @@ return new class extends Migration
             $table->string('selection_id');
             $table->decimal('odds')->nullable();
             $table->integer('event_id');
+            $table->integer('player_id')->nullable();
             $table->integer('event_number');
-            $table->dateTime('event_time');
+            $table->date('event_date');
+            $table->time('event_time');
             $table->dateTime('finish_time');
             $table->string('event_type');
             $table->string('market');

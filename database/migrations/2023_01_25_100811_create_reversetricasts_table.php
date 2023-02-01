@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('name');
             $table->integer('event_id');
             $table->integer('event_no');
-            $table->dateTime('event_time');
+            $table->date('event_date');
+            $table->time('event_time');
             $table->dateTime('finish_time');
             $table->string('event_type');
             $table->timestamps();

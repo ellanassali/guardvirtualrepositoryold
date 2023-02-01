@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->integer('event_id');
             $table->integer('event_no');
-            $table->dateTime('event_time');
+            $table->date('event_date');
+            $table->time('event_time');
             $table->dateTime('event_finishTime');
             $table->string('event_type');
             $table->integer('playsPaysOn');

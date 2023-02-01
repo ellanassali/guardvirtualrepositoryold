@@ -44,6 +44,9 @@ class MotorraceEventService
 
         foreach (json_decode($json, true) as $items) {
             foreach ($items as $item) {
+                $datetime = new DateTime($item['@attributes']['EventTime']);
+                $event_time =  $datetime->format('H:i:s');
+                $event_date =  $datetime->format('Y-m-d');
                 $event_id = $item['@attributes']['ID'];
                 $forecast = Http::get('http://vseintegration.kironinteractive.com:8013/vsegameserver/dataservice/raceeventcombinationodds/' . $event_id . '');
                 $forecast_xml = simplexml_load_string($forecast->body());
@@ -64,7 +67,8 @@ class MotorraceEventService
                     $race_event->id = $item['@attributes']['ID'];
                     $race_event->eventType = $item['@attributes']['EventType'];
                     $race_event->eventNumber = $item['@attributes']['EventNumber'];
-                    $race_event->eventTime = $item['@attributes']['EventTime'];
+                    $race_event->event_time = $event_time;
+                    $race_event->event_date = $event_date;
                     $race_event->finishTime = $item['@attributes']['FinishTime'];
                     $race_event->eventStatus = $item['@attributes']['EventStatus'];
                     $race_event->distance = $item['@attributes']['Distance'];
@@ -77,7 +81,8 @@ class MotorraceEventService
                     $editable_race_event->id = $item['@attributes']['ID'];
                     $editable_race_event->eventType = $item['@attributes']['EventType'];
                     $editable_race_event->eventNumber = $item['@attributes']['EventNumber'];
-                    $editable_race_event->eventTime = $item['@attributes']['EventTime'];
+                    $editable_race_event->event_time = $event_time;
+                    $editable_race_event->event_date = $event_date;
                     $editable_race_event->finishTime = $item['@attributes']['FinishTime'];
                     $editable_race_event->eventStatus = $item['@attributes']['EventStatus'];
                     $editable_race_event->name = $item['@attributes']['Name'];
@@ -93,9 +98,12 @@ class MotorraceEventService
                             $new_entry->draw = $entry['@attributes']['Draw'] ?? null;
                             $new_entry->name = $entry['@attributes']['Name'] ?? null;
                             $new_entry->event_id = $item['@attributes']['ID'];
+                            $new_entry->player_id = $entry['@attributes']['ID'];
                             $new_entry->event_number = $item['@attributes']['EventNumber'];
+                            $new_entry->event_status = $item['@attributes']['EventStatus'];
                             $new_entry->event_type = $item['@attributes']['EventType'];
-                            $new_entry->event_time = $item['@attributes']['EventTime'];
+                            $new_entry->event_time = $event_time;
+                            $new_entry->event_date = $event_date;
                             $new_entry->finish_time = $item['@attributes']['FinishTime'];
                             $new_entry->save();
                         } else {
@@ -104,9 +112,12 @@ class MotorraceEventService
                             $editable_entry->draw = $entry['@attributes']['Draw'];
                             $editable_entry->name = $entry['@attributes']['Name'];
                             $editable_entry->event_id = $item['@attributes']['ID'];
+                            $editable_entry->player_id = $entry['@attributes']['ID'];
                             $editable_entry->event_number = $item['@attributes']['EventNumber'];
                             $editable_entry->event_type = $item['@attributes']['EventType'];
-                            $editable_entry->event_time = $item['@attributes']['EventTime'];
+                            $editable_entry->event_status = $item['@attributes']['EventStatus'];
+                            $editable_entry->event_time = $event_time;
+                            $editable_entry->event_date = $event_date;
                             $editable_entry->finish_time = $item['@attributes']['FinishTime'];
                             $editable_entry->update();
                         }
@@ -118,7 +129,8 @@ class MotorraceEventService
                         $new_market->id = $market['@attributes']['ID'];
                         $new_market->event_number = $item['@attributes']['EventNumber'];
                         $new_market->event_type = $item['@attributes']['EventType'];
-                        $new_market->event_time = $item['@attributes']['EventTime'];
+                        $new_market->event_time = $event_time;
+                        $new_market->event_date = $event_date;
                         $new_market->finish_time = $item['@attributes']['FinishTime'];
 
                         $new_market->save();
@@ -127,7 +139,8 @@ class MotorraceEventService
                         $editable_market->id = $market['@attributes']['ID'];
                         $editable_market->event_number = $item['@attributes']['EventNumber'];
                         $editable_market->event_type = $item['@attributes']['EventType'];
-                        $editable_market->event_time = $item['@attributes']['EventTime'];
+                        $editable_market->event_time = $event_time;
+                        $editable_market->event_date = $event_date;
                         $editable_market->finish_time = $item['@attributes']['FinishTime'];
                         $editable_market->update();
                     }
@@ -139,8 +152,11 @@ class MotorraceEventService
                             $winandplace->event_id = $item['@attributes']['ID'];
                             $winandplace->event_no = $item['@attributes']['EventNumber'];
                             $winandplace->event_type = $item['@attributes']['EventType'];
-                            $winandplace->event_time = $item['@attributes']['EventTime'];
+                            $winandplace->event_time = $event_time;
+                            $winandplace->player_id = $entry->id;
+                            $winandplace->event_date = $event_date;
                             $winandplace->finish_time = $item['@attributes']['FinishTime'];
+                            $winandplace->event_status = $item['@attributes']['EventStatus'];
                             $winandplace->draw = $selection['@attributes']['ID'];
                             if ($entry) {
                                 $winandplace->name = $entry->name;
@@ -154,8 +170,11 @@ class MotorraceEventService
                             $winandplace->event_id = $item['@attributes']['ID'];
                             $winandplace->event_no = $item['@attributes']['EventNumber'];
                             $winandplace->event_type = $item['@attributes']['EventType'];
-                            $winandplace->event_time = $item['@attributes']['EventTime'];
+                            $winandplace->player_id = $entry->id;
+                            $winandplace->event_time = $event_time;
+                            $winandplace->event_date = $event_date;
                             $winandplace->finish_time = $item['@attributes']['FinishTime'];
+                            $winandplace->event_status = $item['@attributes']['EventStatus'];
                             $winandplace->draw = $selection['@attributes']['ID'];
                             if ($entry) {
                                 $winandplace->name = $entry->name;
@@ -176,7 +195,9 @@ class MotorraceEventService
                                 $new_oddeven->event_id = $item['@attributes']['ID'];
                                 $new_oddeven->event_no = $item['@attributes']['EventNumber'];
                                 $new_oddeven->event_type = $item['@attributes']['EventType'];
-                                $new_oddeven->event_time = $item['@attributes']['EventTime'];
+                                $new_oddeven->event_status = $item['@attributes']['EventStatus'];
+                                $new_oddeven->event_time = $event_time;
+                                $new_oddeven->event_date = $event_date;
                                 $new_oddeven->finish_time = $item['@attributes']['FinishTime'];
                                 $new_oddeven->save();
                             }
@@ -192,7 +213,9 @@ class MotorraceEventService
                                 $editable_oddeven->event_id = $item['@attributes']['ID'];
                                 $editable_oddeven->event_no = $item['@attributes']['EventNumber'];
                                 $editable_oddeven->event_type = $item['@attributes']['EventType'];
-                                $editable_oddeven->event_time = $item['@attributes']['EventTime'];
+                                $editable_oddeven->event_status = $item['@attributes']['EventStatus'];
+                                $editable_oddeven->event_time = $event_time;
+                                $editable_oddeven->event_date = $event_date;
                                 $editable_oddeven->finish_time = $item['@attributes']['FinishTime'];
                                 $editable_oddeven->update();
                             }
@@ -211,8 +234,10 @@ class MotorraceEventService
                                 }
                                 $new_highlow->event_id = $item['@attributes']['ID'];
                                 $new_highlow->event_no = $item['@attributes']['EventNumber'];
+                                $new_highlow->event_status = $item['@attributes']['EventStatus'];
                                 $new_highlow->event_type = $item['@attributes']['EventType'];
-                                $new_highlow->event_time = $item['@attributes']['EventTime'];
+                                $new_highlow->event_time = $event_time;
+                                $new_highlow->event_date = $event_date;
                                 $new_highlow->finish_time = $item['@attributes']['FinishTime'];
 
                                 $new_highlow->save();
@@ -229,19 +254,24 @@ class MotorraceEventService
                                 $editable_highlow->event_id = $item['@attributes']['ID'];
                                 $editable_highlow->event_no = $item['@attributes']['EventNumber'];
                                 $editable_highlow->event_type = $item['@attributes']['EventType'];
-                                $editable_highlow->event_time = $item['@attributes']['EventTime'];
+                                $editable_highlow->event_time = $event_time;
+                                $editable_highlow->event_date = $event_date;
+                                $editable_highlow->event_status = $item['@attributes']['EventStatus'];
                                 $editable_highlow->finish_time = $item['@attributes']['FinishTime'];
                                 $editable_highlow->update();
                             }
                         }
                     }
                     foreach ($market['Selection'] as $selection) {
+                        $entry = Entry::where('event_number', $item['@attributes']['EventNumber'])->where('event_id', $item['@attributes']['ID'])->where('draw', $selection['@attributes']['ID'])->first();
                         $new_selection = new Selection();
                         $new_selection->odds = $selection['@attributes']['Odds'] ?? null;
                         $new_selection->event_id = $item['@attributes']['ID'];
                         $new_selection->event_number = $item['@attributes']['EventNumber'];
                         $new_selection->event_type = $item['@attributes']['EventType'];
-                        $new_selection->event_time = $item['@attributes']['EventTime'];
+                        $new_selection->player_id = $entry->id ?? null;
+                        $new_selection->event_time = $event_time;
+                        $new_selection->event_date = $event_date;
                         $new_selection->finish_time = $item['@attributes']['FinishTime'];
                         $new_selection->market = $market['@attributes']['ID'];
                         $new_selection->selection_id = $selection['@attributes']['ID'];
@@ -255,7 +285,8 @@ class MotorraceEventService
                             $new_forecast->name = $forecast[0];
                             $new_forecast->event_no = $item['@attributes']['EventNumber'];
                             $new_forecast->event_type = $item['@attributes']['EventType'];
-                            $new_forecast->event_time = $item['@attributes']['EventTime'];
+                            $new_forecast->event_time = $event_time;
+                            $new_forecast->event_date = $event_date;
                             $new_forecast->finish_time = $item['@attributes']['FinishTime'];
                             $new_forecast->event_id = $item['@attributes']['ID'];
                             $new_forecast->save();
@@ -265,7 +296,8 @@ class MotorraceEventService
                             $editable_forecast->name = $forecast[0];
                             $editable_forecast->event_no = $item['@attributes']['EventNumber'];
                             $editable_forecast->event_type = $item['@attributes']['EventType'];
-                            $editable_forecast->event_time = $item['@attributes']['EventTime'];
+                            $editable_forecast->event_time = $event_time;
+                            $editable_forecast->event_date = $event_date;
                             $editable_forecast->finish_time = $item['@attributes']['FinishTime'];
                             $editable_forecast->event_id = $item['@attributes']['ID'];
 
@@ -280,7 +312,8 @@ class MotorraceEventService
                             $new_tricast->name = $tricast[0];
                             $new_tricast->event_no = $item['@attributes']['EventNumber'];
                             $new_tricast->event_type = $item['@attributes']['EventType'];
-                            $new_tricast->event_time = $item['@attributes']['EventTime'];
+                            $new_tricast->event_time = $event_time;
+                            $new_tricast->event_date = $event_date;
                             $new_tricast->finish_time = $item['@attributes']['FinishTime'];
                             $new_tricast->event_id = $item['@attributes']['ID'];
                             $new_tricast->save();
@@ -290,7 +323,8 @@ class MotorraceEventService
                             $editable_tricast->name = $tricast[0];
                             $editable_tricast->event_no = $item['@attributes']['EventNumber'];
                             $editable_tricast->event_type = $item['@attributes']['EventType'];
-                            $editable_tricast->event_time = $item['@attributes']['EventTime'];
+                            $editable_tricast->event_time = $event_time;
+                            $editable_tricast->event_date = $event_date;
                             $editable_tricast->finish_time = $item['@attributes']['FinishTime'];
                             $editable_tricast->event_id = $item['@attributes']['ID'];
                             $editable_tricast->update();
@@ -304,7 +338,8 @@ class MotorraceEventService
                             $new_reversed_forecast->name = $reverseForecast[0];
                             $new_reversed_forecast->event_no = $item['@attributes']['EventNumber'];
                             $new_reversed_forecast->event_type = $item['@attributes']['EventType'];
-                            $new_reversed_forecast->event_time = $item['@attributes']['EventTime'];
+                            $new_reversed_forecast->event_time = $event_time;
+                            $new_reversed_forecast->event_date = $event_date;
                             $new_reversed_forecast->finish_time = $item['@attributes']['FinishTime'];
                             $new_reversed_forecast->event_id = $item['@attributes']['ID'];
                             $new_reversed_forecast->save();
@@ -314,7 +349,8 @@ class MotorraceEventService
                             $editable_reversed_forecast->name = $reverseForecast[0];
                             $editable_reversed_forecast->event_no = $item['@attributes']['EventNumber'];
                             $editable_reversed_forecast->event_type = $item['@attributes']['EventType'];
-                            $editable_reversed_forecast->event_time = $item['@attributes']['EventTime'];
+                            $editable_reversed_forecast->event_time = $event_time;
+                            $editable_reversed_forecast->event_date = $event_date;
                             $editable_reversed_forecast->finish_time = $item['@attributes']['FinishTime'];
                             $editable_reversed_forecast->event_id = $item['@attributes']['ID'];
                             $editable_reversed_forecast->update();
@@ -328,7 +364,8 @@ class MotorraceEventService
                             $new_reversed_tricast->name = $reverseTricast[0];
                             $new_reversed_tricast->event_no = $item['@attributes']['EventNumber'];
                             $new_reversed_tricast->event_type = $item['@attributes']['EventType'];
-                            $new_reversed_tricast->event_time = $item['@attributes']['EventTime'];
+                            $new_reversed_tricast->event_time = $event_time;
+                            $new_reversed_tricast->event_date = $event_date;
                             $new_reversed_tricast->finish_time = $item['@attributes']['FinishTime'];
                             $new_reversed_tricast->event_id = $item['@attributes']['ID'];
                             $new_reversed_tricast->save();
@@ -338,7 +375,8 @@ class MotorraceEventService
                             $editable_reversed_tricast->name = $reverseTricast[0];
                             $editable_reversed_tricast->event_no = $item['@attributes']['EventNumber'];
                             $editable_reversed_tricast->event_type = $item['@attributes']['EventType'];
-                            $editable_reversed_tricast->event_time = $item['@attributes']['EventTime'];
+                            $editable_reversed_tricast->event_time = $event_time;
+                            $editable_reversed_tricast->event_date = $event_date;
                             $editable_reversed_tricast->finish_time = $item['@attributes']['FinishTime'];
                             $editable_reversed_tricast->event_id = $item['@attributes']['ID'];
                             $editable_reversed_tricast->update();
@@ -352,7 +390,8 @@ class MotorraceEventService
                             $new_swinger->name = $swinger[0];
                             $new_swinger->event_no = $item['@attributes']['EventNumber'];
                             $new_swinger->event_type = $item['@attributes']['EventType'];
-                            $new_swinger->event_time = $item['@attributes']['EventTime'];
+                            $new_swinger->event_time = $event_time;
+                            $new_swinger->event_date = $event_date;
                             $new_swinger->finish_time = $item['@attributes']['FinishTime'];
                             $new_swinger->event_id = $item['@attributes']['ID'];
                             $new_swinger->save();
@@ -362,7 +401,8 @@ class MotorraceEventService
                             $editable_swinger->name = $swinger[0];
                             $editable_swinger->event_no = $item['@attributes']['EventNumber'];
                             $editable_swinger->event_type = $item['@attributes']['EventType'];
-                            $editable_swinger->event_time = $item['@attributes']['EventTime'];
+                            $editable_swinger->event_time = $event_time;
+                            $editable_swinger->event_date = $event_date;
                             $editable_swinger->finish_time = $item['@attributes']['FinishTime'];
                             $editable_swinger->event_id = $item['@attributes']['ID'];
                             $editable_swinger->update();
@@ -383,7 +423,8 @@ class MotorraceEventService
                                 $forecast_result = new Forecastresults();
                                 $forecast_result->event_id = $items['@attributes']['ID'];
                                 $forecast_result->event_no = $items['@attributes']['EventNumber'];
-                                $forecast_result->event_time = $items['@attributes']['EventTime'];
+                                $forecast_result->event_time = $event_time;
+                                $forecast_result->event_date = $event_date;
                                 $forecast_result->event_type = $items['@attributes']['EventType'];
                                 $forecast_result->event_finishTime = $items['@attributes']['FinishTime'];
                                 $forecast_result->position_one = $results[0];
@@ -397,7 +438,8 @@ class MotorraceEventService
                                 $reversed_forecast_result = new Reverseforecastresults();
                                 $reversed_forecast_result->event_id = $items['@attributes']['ID'];
                                 $reversed_forecast_result->event_no = $items['@attributes']['EventNumber'];
-                                $reversed_forecast_result->event_time = $items['@attributes']['EventTime'];
+                                $reversed_forecast_result->event_time = $event_time;
+                                $reversed_forecast_result->event_date = $event_date;
                                 $reversed_forecast_result->event_type = $items['@attributes']['EventType'];
                                 $reversed_forecast_result->event_finishTime = $items['@attributes']['FinishTime'];
                                 $reversed_forecast_result->position_one = $results[0];
@@ -411,7 +453,8 @@ class MotorraceEventService
                                 $tricast_result = new Tricastresults();
                                 $tricast_result->event_id = $items['@attributes']['ID'];
                                 $tricast_result->event_no = $items['@attributes']['EventNumber'];
-                                $tricast_result->event_time = $items['@attributes']['EventTime'];
+                                $tricast_result->event_time = $event_time;
+                                $tricast_result->event_date = $event_date;
                                 $tricast_result->event_type = $items['@attributes']['EventType'];
                                 $tricast_result->event_finishTime = $items['@attributes']['FinishTime'];
                                 $tricast_result->position_one = $results[0];
@@ -426,7 +469,8 @@ class MotorraceEventService
                                 $reversed_tricast_result = new Reversetricasttresults();
                                 $reversed_tricast_result->event_id = $items['@attributes']['ID'];
                                 $reversed_tricast_result->event_no = $items['@attributes']['EventNumber'];
-                                $reversed_tricast_result->event_time = $items['@attributes']['EventTime'];
+                                $reversed_tricast_result->event_time = $event_time;
+                                $reversed_tricast_result->event_date = $event_date;
                                 $reversed_tricast_result->event_type = $items['@attributes']['EventType'];
                                 $reversed_tricast_result->event_finishTime = $items['@attributes']['FinishTime'];
                                 $reversed_tricast_result->position_one = $results[0];
@@ -441,7 +485,8 @@ class MotorraceEventService
                                     $swinger_result_result = new Swingerresults();
                                     $swinger_result_result->event_id = $items['@attributes']['ID'];
                                     $swinger_result_result->event_no = $items['@attributes']['EventNumber'];
-                                    $swinger_result_result->event_time = $items['@attributes']['EventTime'];
+                                    $swinger_result_result->event_time = $event_time;
+                                    $swinger_result_result->event_date = $event_date;
                                     $swinger_result_result->event_type = $items['@attributes']['EventType'];
                                     $swinger_result_result->event_finishTime = $items['@attributes']['FinishTime'];
                                     $swinger_result_result->entry_id = $selection['@attributes']['ID'];
@@ -458,7 +503,8 @@ class MotorraceEventService
                                         $oddeven_result = new Oddevenresults();
                                         $oddeven_result->event_id = $items['@attributes']['ID'];
                                         $oddeven_result->event_no = $items['@attributes']['EventNumber'];
-                                        $oddeven_result->event_time = $items['@attributes']['EventTime'];
+                                        $oddeven_result->event_time = $event_time;
+                                        $oddeven_result->event_date = $event_date;
                                         $oddeven_result->event_type = $items['@attributes']['EventType'];
                                         $oddeven_result->event_finishTime = $items['@attributes']['FinishTime'];
                                         $oddeven_result->selection_id = $selection['@attributes']['ID'] ?? null;
@@ -476,7 +522,8 @@ class MotorraceEventService
                                         $high_low_results = new Highlowresults();
                                         $high_low_results->event_id = $items['@attributes']['ID'];
                                         $high_low_results->event_no = $items['@attributes']['EventNumber'];
-                                        $high_low_results->event_time = $items['@attributes']['EventTime'];
+                                        $high_low_results->event_time = $event_time;
+                                        $high_low_results->event_date = $event_date;
                                         $high_low_results->event_type = $items['@attributes']['EventType'];
                                         $high_low_results->event_finishTime = $items['@attributes']['FinishTime'];
                                         $high_low_results->selection_id = $selection['@attributes']['ID'] ?? null;
@@ -494,7 +541,8 @@ class MotorraceEventService
                             $race_result = new Raceresult();
                             $race_result->event_id = $items['@attributes']['ID'];
                             $race_result->event_no = $items['@attributes']['EventNumber'];
-                            $race_result->event_time = $items['@attributes']['EventTime'];
+                            $race_result->event_time = $event_time;
+                            $race_result->event_date = $event_date;
                             $race_result->event_type = $items['@attributes']['EventType'];
                             $race_result->event_finishTime = $items['@attributes']['FinishTime'];
                             $race_result->playsPaysOn = $items['@attributes']['PlacePaysOn'];
@@ -525,7 +573,8 @@ class MotorraceEventService
                                                 }
                                                 $win_result->event_id = $items['@attributes']['ID'];
                                                 $win_result->event_no = $items['@attributes']['EventNumber'];
-                                                $win_result->event_time = $items['@attributes']['EventTime'];
+                                                $win_result->event_time = $event_time;
+                                                $win_result->event_date = $event_date;
                                                 $win_result->event_type = $items['@attributes']['EventType'];
                                                 $win_result->event_finishTime = $items['@attributes']['FinishTime'];
                                                 $win_result->selection_id = $selection['@attributes']['ID'] ?? null;
@@ -546,7 +595,8 @@ class MotorraceEventService
                                                 $place_result->place_status = 1;
                                                 $place_result->event_id = $items['@attributes']['ID'];
                                                 $place_result->event_no = $items['@attributes']['EventNumber'];
-                                                $place_result->event_time = $items['@attributes']['EventTime'];
+                                                $place_result->event_time = $event_time;
+                                                $place_result->event_date = $event_date;
                                                 $place_result->event_type = $items['@attributes']['EventType'];
                                                 $place_result->event_finishTime = $items['@attributes']['FinishTime'];
                                                 $place_result->selection_id = $selection['@attributes']['ID'] ?? null;

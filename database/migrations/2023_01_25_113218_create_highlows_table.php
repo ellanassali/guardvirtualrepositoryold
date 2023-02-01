@@ -23,6 +23,8 @@ return new class extends Migration
             $table->time('event_time');
             $table->string('event_status');
             $table->dateTime('finish_time');
+            $table->time('local_eventTimetostart');
+            $table->time('local_eventTimetofinish');
             $table->string('event_type');
             $table->timestamps();
         });

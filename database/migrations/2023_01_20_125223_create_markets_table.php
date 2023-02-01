@@ -19,6 +19,8 @@ return new class extends Migration
             $table->date('event_date');
             $table->time('event_time');
             $table->dateTime('finish_time');
+            $table->time('local_eventTimetostart');
+            $table->time('local_eventTimetofinish');
             $table->string('event_type');
             $table->timestamps();
         });

@@ -20,6 +20,8 @@ return new class extends Migration
             $table->date('event_date');
             $table->time('event_time');
             $table->dateTime('event_finishTime');
+            $table->time('local_eventTimetostart');
+            $table->time('local_eventTimetofinish');
             $table->string('event_type');
             $table->integer('playsPaysOn');
             $table->integer('entry_id');

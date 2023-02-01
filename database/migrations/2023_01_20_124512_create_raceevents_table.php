@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('eventNumber');
             $table->date('event_date');
             $table->time('event_time');
+            $table->time('local_eventTimetostart');
+            $table->time('local_eventTimetofinish');
             $table->dateTime('finishTime');
             $table->string('eventStatus');
             $table->integer('distance');
